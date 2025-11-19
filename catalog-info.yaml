@@ -1,0 +1,32 @@
+# Declare your Buildkite pipelines below
+---
+# yaml-language-server: $schema=https://gist.githubusercontent.com/elasticmachine/988b80dae436cafea07d9a4a460a011d/raw/rre.schema.json
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: buildkite-pipeline-pipes-py
+  description: Buildkite Pipeline for pipes-py
+  links:
+    - title: Pipeline
+      url: https://buildkite.com/elastic/pipes-py
+
+spec:
+  type: buildkite-pipeline
+  owner: group:security-engineering-productivity
+  system: buildkite
+  implementation:
+    apiVersion: buildkite.elastic.dev/v1
+    kind: Pipeline
+    metadata:
+      name: pipes-py
+      description: A library of Elastic Pipes components
+    spec:
+      repository: elastic/pipes-py
+      pipeline_file: ".buildkite/pipeline.yml"
+      provider_settings:
+        build_pull_request_forks: true
+      teams:
+        security-engineering-productivity:
+          access_level: MANAGE_BUILD_AND_READ
+        everyone:
+          access_level: READ_ONLY
