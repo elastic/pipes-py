@@ -18,3 +18,12 @@ steps:
       image: "docker.elastic.co/ci-agent-images/pipelib:0.24.0@sha256:0eead43a2b3b10d4241d160548e09807dae21b559aabb0a8fac1641696ea9813"
     if_changed:
       - "catalog-info.yaml"
+
+  - label: "Upload public trigger pipeline"
+    command: "buildkite-agent pipeline upload .buildkite/pipelines/public-trigger.yml"
+    if_changed:
+      include:
+        - "**/*"
+      exclude:
+        - "catalog-info.yaml"
+        - "renovate.json"
