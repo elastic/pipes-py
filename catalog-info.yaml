@@ -30,3 +30,33 @@ spec:
           access_level: MANAGE_BUILD_AND_READ
         everyone:
           access_level: READ_ONLY
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: buildkite-pipeline-pipes-public-py
+  description: Buildkite Pipeline for pipes-py (public)
+  links:
+    - title: Pipeline
+      url: https://buildkite.com/elastic/pipes-public-py
+
+spec:
+  type: buildkite-pipeline
+  owner: group:security-engineering-productivity
+  system: buildkite
+  implementation:
+    apiVersion: buildkite.elastic.dev/v1
+    kind: Pipeline
+    metadata:
+      name: pipes-public-py
+      description: Test public Elastic Pipes components that need a Cloud Org
+    spec:
+      repository: elastic/pipes-py
+      pipeline_file: ".buildkite/pipelines/public.yml"
+      provider_settings:
+        trigger_mode: none
+      teams:
+        security-engineering-productivity:
+          access_level: MANAGE_BUILD_AND_READ
+        everyone:
+          access_level: READ_ONLY
