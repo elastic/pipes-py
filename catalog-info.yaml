@@ -22,7 +22,7 @@ spec:
       description: A library of Elastic Pipes components
     spec:
       repository: elastic/pipes-py
-      pipeline_file: ".buildkite/pipeline.yml"
+      pipeline_file: ".buildkite/pipelines/main.yml"
       provider_settings:
         build_pull_request_forks: true
       teams:
