@@ -26,9 +26,13 @@ Homepage = "https://github.com/elastic/pipes-py"
 "Bug Tracker" = "https://github.com/elastic/pipes-py/issues"
 
 [tool.setuptools]
-packages = ["elastic.pipes.es.snapshot"]
+packages = [
+  "elastic.pipes.ec.users.auth",
+  "elastic.pipes.es.snapshot",
+]
 
 [tool.setuptools.package-dir]
+"elastic.pipes.ec.users.auth" = "ec/users/auth"
 "elastic.pipes.es.snapshot" = "es/snapshot"
 
 [tool.black]

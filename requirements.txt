@@ -1,4 +1,5 @@
 black
 build
+elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py
 isort
 ruff

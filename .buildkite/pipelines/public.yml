@@ -1,9 +1,16 @@
 ---
+# $yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+
+agents:
+  image: "docker.elastic.co/appex-qa/qaf:latest@sha256:4ef94d08272b5d3fab80ecfc3efacad0ad88f76ca1dafb4d0b746c710864b4ca"
 
 steps:
-  - label: "A public test"
-    command:
-      - 'EC_API_URL=$(buildkite-agent meta-data get "ec-api-url")'
-      - 'EC_API_KEY=$(buildkite-agent meta-data get "ec-api-key")'
-      - 'ID=$(curl -s -H "Authorization: ApiKey $$EC_API_KEY" "$$EC_API_URL/account" | tee /dev/stderr | jq -r ".id // empty")'
-      - '[ -n "$$ID" ]'
+  - label: "Elastic Cloud auth"
+    command: |
+      echo "~~~ Install dependencies"
+      pip install -r requirements.txt .
+      echo "+++ Run tests"
+      export EC_API_URL=$(buildkite-agent meta-data get "ec-api-url")
+      export EC_API_KEY=$(buildkite-agent meta-data get "ec-api-key")
+      KEY_DESCRIPTION="bk-${BUILDKITE_PIPELINE_NAME}-${BUILDKITE_BUILD_NUMBER}"
+      ./ec/users/auth/test.yaml -a key-description="$$KEY_DESCRIPTION"
