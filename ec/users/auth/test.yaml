@@ -1,0 +1,16 @@
+#!/usr/bin/env -S elastic-pipes run
+
+key: {}
+
+pipes:
+  - elastic.pipes:
+      logging:
+        level: debug
+
+  - create-api-key:
+      ec-auth-key@: runtime.environment.EC_API_KEY
+      description@: runtime.arguments.key-description
+      expiration: "1h"
+
+  - delete-api-key:
+      ec-auth-key@: runtime.environment.EC_API_KEY
