@@ -18,7 +18,8 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-  "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py"
+  "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py",
+  "httpx",
 ]
 
 [project.urls]
@@ -27,11 +28,21 @@ Homepage = "https://github.com/elastic/pipes-py"
 
 [tool.setuptools]
 packages = [
+  "elastic.pipes.ec",
+  "elastic.pipes.ec.deployments",
+  "elastic.pipes.ec.deployments.es",
+  "elastic.pipes.ec.deployments.es.keystore",
+  "elastic.pipes.ec.users.auth",
   "elastic.pipes.es.snapshot",
   "elastic.pipes.es.snapshot.repository",
 ]
 
 [tool.setuptools.package-dir]
+"elastic.pipes.ec" = "ec"
+"elastic.pipes.ec.deployments" = "ec/deployments"
+"elastic.pipes.ec.deployments.es" = "ec/deployments/es"
+"elastic.pipes.ec.deployments.es.keystore" = "ec/deployments/es/keystore"
+"elastic.pipes.ec.users.auth" = "ec/users/auth"
 "elastic.pipes.es.snapshot" = "es/snapshot"
 "elastic.pipes.es.snapshot.repository" = "es/snapshot/repository"
 
