@@ -18,7 +18,8 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-  "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py"
+  "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py",
+  "httpx",
 ]
 
 [project.urls]
@@ -28,6 +29,8 @@ Homepage = "https://github.com/elastic/pipes-py"
 [tool.setuptools.packages.find]
 where = ["."]
 include = [
+  "ec",
+  "ec.*",
   "es",
   "es.*",
 ]
