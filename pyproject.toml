@@ -18,7 +18,8 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-  "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py"
+  "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py",
+  "httpx",
 ]
 
 [project.urls]
@@ -26,9 +27,13 @@ Homepage = "https://github.com/elastic/pipes-py"
 "Bug Tracker" = "https://github.com/elastic/pipes-py/issues"
 
 [tool.setuptools]
-packages = ["elastic.pipes.es.snapshot"]
+packages = [
+  "elastic.pipes.ec.deployments.elasticsearch.keystore",
+  "elastic.pipes.es.snapshot",
+]
 
 [tool.setuptools.package-dir]
+"elastic.pipes.ec.deployments.elasticsearch.keystore" = "ec/deployments/elasticsearch/keystore"
 "elastic.pipes.es.snapshot" = "es/snapshot"
 
 [tool.black]
