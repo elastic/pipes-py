@@ -25,11 +25,16 @@ dependencies = [
 Homepage = "https://github.com/elastic/pipes-py"
 "Bug Tracker" = "https://github.com/elastic/pipes-py/issues"
 
-[tool.setuptools]
-packages = ["elastic.pipes.es.snapshot"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+  "es",
+  "es.*",
+]
+namespaces = true
 
 [tool.setuptools.package-dir]
-"elastic.pipes.es.snapshot" = "es/snapshot"
+"elastic.pipes" = "."
 
 [tool.black]
 line-length = 140
