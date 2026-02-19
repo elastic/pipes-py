@@ -18,18 +18,26 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-  "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py"
+  "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py",
+  "httpx",
 ]
 
 [project.urls]
 Homepage = "https://github.com/elastic/pipes-py"
 "Bug Tracker" = "https://github.com/elastic/pipes-py/issues"
 
-[tool.setuptools]
-packages = ["elastic.pipes.es.snapshot"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+  "ec",
+  "ec.*",
+  "es",
+  "es.*",
+]
+namespaces = true
 
 [tool.setuptools.package-dir]
-"elastic.pipes.es.snapshot" = "es/snapshot"
+"elastic.pipes" = "."
 
 [tool.black]
 line-length = 140
