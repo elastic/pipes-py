@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 from logging import Logger
 
 from elastic.pipes.core import Pipe
@@ -46,12 +45,10 @@ def main(
 ):
     """Create a snapshot repository in the given stack."""
 
-    body = json.dumps(
-        {
-            "type": type,
-            "settings": settings,
-        }
-    )
+    body = {
+        "type": type,
+        "settings": settings,
+    }
     log.debug(f"body: {body}")
 
     log.info(f"creating repository: {repository}")
