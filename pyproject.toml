@@ -26,10 +26,14 @@ Homepage = "https://github.com/elastic/pipes-py"
 "Bug Tracker" = "https://github.com/elastic/pipes-py/issues"
 
 [tool.setuptools]
-packages = ["elastic.pipes.es.snapshot"]
+packages = [
+  "elastic.pipes.es.snapshot",
+  "elastic.pipes.es.snapshot.repository",
+]
 
 [tool.setuptools.package-dir]
 "elastic.pipes.es.snapshot" = "es/snapshot"
+"elastic.pipes.es.snapshot.repository" = "es/snapshot/repository"
 
 [tool.black]
 line-length = 140
