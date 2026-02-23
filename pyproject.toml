@@ -29,11 +29,13 @@ Homepage = "https://github.com/elastic/pipes-py"
 [tool.setuptools]
 packages = [
   "elastic.pipes.es.snapshot",
+  "elastic.pipes.es.snapshot.repository",
   "elastic.pipes.hcp.vault",
 ]
 
 [tool.setuptools.package-dir]
 "elastic.pipes.es.snapshot" = "es/snapshot"
+"elastic.pipes.es.snapshot.repository" = "es/snapshot/repository"
 "elastic.pipes.hcp.vault" = "hcp/vault"
 
 [tool.black]
