@@ -1,0 +1,39 @@
+#!/usr/bin/env -S elastic-pipes run
+
+deployment: {}
+
+pipes:
+  - elastic.pipes.core.export:
+      file: deployment.json
+      node@: deployment
+      on-failure: true
+
+  - create:
+      name@: runtime.environment.EC_DEPLOYMENT_NAME
+      ec-api-url@: runtime.environment.EC_API_URL
+      ec-auth-key@: runtime.environment.EC_API_KEY
+      resources:
+        elasticsearch:
+          - ref_id: "main-elasticsearch"
+            region: "gcp-us-central1"
+            plan:
+              elasticsearch:
+                version: "9.0.0"
+              deployment_template:
+                id: gcp-storage-optimized
+              cluster_topology:
+                - zone_count: 1
+                  instance_configuration_id: "gcp.es.datahot.n2.68x10x45"
+                  node_roles:
+                    - master
+                    - ingest
+                    - data_hot
+                    - data_content
+                  id: hot_content
+                  size:
+                    resource: "memory"
+                    value: 1024
+
+  - elastic.pipes.core.export:
+      file: deployment.json
+      node@: deployment

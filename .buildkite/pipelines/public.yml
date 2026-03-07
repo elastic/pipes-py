@@ -1,9 +1,49 @@
 ---
+agents:
+  image: "docker.elastic.co/appex-qa/qaf:latest@sha256:52ce7dde9968278358a873bde7582ed2df5bcc60164e94484492dcee96eef03b"
+
+env:
+  EC_DEPLOYMENT_NAME: "bk-pipes-${BUILDKITE_BUILD_NUMBER}-${BUILDKITE_BRANCH}"
 
 steps:
-  - label: "A public test"
-    command:
-      - 'EC_API_URL=$(buildkite-agent meta-data get "ec-api-url")'
-      - 'EC_API_KEY=$(buildkite-agent meta-data get "ec-api-key")'
-      - 'ID=$(curl -s -H "Authorization: ApiKey $$EC_API_KEY" "$$EC_API_URL/account" | tee /dev/stderr | jq -r ".id // empty")'
-      - '[ -n "$$ID" ]'
+  - group: "ec.users"
+    steps:
+      - label: "Create and destroy keys"
+        command: |
+          echo "~~~ Install dependencies"
+          pip install .
+          echo "+++ Run tests"
+          export EC_API_URL=$(buildkite-agent meta-data get "ec-api-url")
+          export EC_API_KEY=$(buildkite-agent meta-data get "ec-api-key")
+          KEY_DESCRIPTION="bk-${BUILDKITE_PIPELINE_NAME}-${BUILDKITE_BUILD_NUMBER}"
+          ./ec/users/auth/test.yaml --log-level=debug -a key-description="$$KEY_DESCRIPTION"
+
+  - group: "ec.deployments"
+    steps:
+      - label: "Create deployment"
+        key: create-deployment
+        command: |
+          echo "~~~ Install dependencies"
+          pip install .
+          echo "+++ Create deployment"
+          export EC_API_URL=$(buildkite-agent meta-data get "ec-api-url")
+          export EC_API_KEY=$(buildkite-agent meta-data get "ec-api-key")
+          if ./ec/deployments/test-create.yaml --log-level=debug; then
+            buildkite-agent meta-data set "deployment-id" "$(jq -r ".id" deployment.json)"
+          else
+            buildkite-agent meta-data set "deployment-id" "$(jq -r ".id" deployment.json)"
+            exit 1
+          fi
+
+      - label: "Destroy deployment"
+        depends_on:
+          - create-deployment
+        command: |
+          echo "~~~ Install dependencies"
+          pip install .
+          echo "+++ Destroy deployment"
+          export EC_API_URL=$(buildkite-agent meta-data get "ec-api-url")
+          export EC_API_KEY=$(buildkite-agent meta-data get "ec-api-key")
+          export EC_DEPLOYMENT_ID=$(buildkite-agent meta-data get "deployment-id")
+          ./ec/deployments/test-destroy.yaml --log-level=debug
+        allow_dependency_failure: true
