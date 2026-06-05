@@ -1,0 +1,7 @@
+#!/usr/bin/env -S elastic-pipes run
+
+pipes:
+  - destroy:
+      deployment-id@: runtime.environment.EC_DEPLOYMENT_ID
+      ec-api-url@: runtime.environment.EC_API_URL
+      ec-auth-key@: runtime.environment.EC_API_KEY
