@@ -1,0 +1,16 @@
+services:
+  vault:
+    image: hashicorp/vault@sha256:7553550027156b8f04e81f61a98c3f53a7bce57104f2a400e2012c851f66ac19
+    command: ["server", "-dev"]
+    environment:
+      VAULT_ADDR: http://127.0.0.1:8200
+      VAULT_DEV_ROOT_TOKEN_ID: test
+    ports:
+      - 8200:8200
+    cap_add:
+      - IPC_LOCK
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 5s
+      timeout: 10s
+      retries: 5

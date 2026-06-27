@@ -18,7 +18,8 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-  "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py"
+  "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py",
+  "hvac>=2.0.0",
 ]
 
 [project.urls]
@@ -26,10 +27,14 @@ Homepage = "https://github.com/elastic/pipes-py"
 "Bug Tracker" = "https://github.com/elastic/pipes-py/issues"
 
 [tool.setuptools]
-packages = ["elastic.pipes.es.snapshot"]
+packages = [
+  "elastic.pipes.es.snapshot",
+  "elastic.pipes.hcp.vault",
+]
 
 [tool.setuptools.package-dir]
 "elastic.pipes.es.snapshot" = "es/snapshot"
+"elastic.pipes.hcp.vault" = "hcp/vault"
 
 [tool.black]
 line-length = 140
