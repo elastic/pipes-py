@@ -34,8 +34,8 @@ def main(
         if not vc.is_authenticated():
             log.error("Vault could not authenticate")
             sys.exit(1)
-    except Exception as e:
-        log.error(e)
+    except Exception:
+        log.exception("Vault could not authenticate")
         sys.exit(1)
 
     log.info(f"write to path '{path}'")

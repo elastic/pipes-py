@@ -48,3 +48,6 @@ skip = [".venv-test"]
 [tool.ruff]
 line-length = 140
 exclude = [".venv-test"]
+
+[tool.ruff.lint]
+ignore = ["EXE001", "FA100"]

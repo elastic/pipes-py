@@ -28,10 +28,9 @@ class Context(Pipe.Context):
     ] = None
 
     def __init__(self):
-        if not self.url:
-            if url := os.environ.get("VAULT_ADDR", None):
-                self.logger.debug("    read URL from environment 'VAULT_ADDR'")
-                self.url = url
+        if not self.url and (url := os.environ.get("VAULT_ADDR")):
+            self.logger.debug("    read URL from environment 'VAULT_ADDR'")
+            self.url = url
         if self.token and self.token_file:
             self.logger.error("both 'token' and 'token-file' are specified")
             sys.exit(1)

@@ -3,6 +3,7 @@
 import sys
 import time
 from logging import Logger
+from typing import Optional
 
 from elastic.pipes.core import Pipe
 from elastic.pipes.core.util import batched, get_es_client
@@ -34,23 +35,23 @@ def main(
         Pipe.Help("name of the snapshot repository to restore from"),
     ],
     snapshot: Annotated[
-        str,
+        Optional[str],
         Pipe.Config("snapshot"),
         Pipe.Help("name of the snapshot to restore"),
         Pipe.Notes("default: latest successful snapshot"),
     ] = None,
     feature_states: Annotated[
-        list,
+        Optional[list],
         Pipe.Config("feature-states"),
         Pipe.Help("list of feature states to restore"),
     ] = None,
     include_aliases: Annotated[
-        bool,
+        Optional[bool],
         Pipe.Config("include-aliases"),
         Pipe.Help("whether to include aliases in the restore"),
     ] = None,
     include_global_state: Annotated[
-        bool,
+        Optional[bool],
         Pipe.Config("include-global-state"),
         Pipe.Help("whether to include the global state in the restore"),
     ] = None,
