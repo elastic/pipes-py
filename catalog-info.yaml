@@ -53,6 +53,7 @@ spec:
       pipeline_file: ".buildkite/pipelines/public.yml"
       provider_settings:
         trigger_mode: none
+        publish_commit_status: true
       teams:
         security-engineering-productivity:
           access_level: MANAGE_BUILD_AND_READ
