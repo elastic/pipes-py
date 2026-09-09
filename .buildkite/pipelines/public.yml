@@ -1,6 +1,6 @@
 ---
 agents:
-  image: "docker.elastic.co/appex-qa/qaf:latest@sha256:6a9e8c3fb32014d9a455607ec4f91224c839b890217c6117eb91117fb5b5edcb"
+  image: "docker.elastic.co/appex-qa/qaf:latest@sha256:e1c94050b67c01ac512fed2a3cfa0e7002b79e18de71992986714b241a218561"
 
 steps:
   - group: "ec.users"
