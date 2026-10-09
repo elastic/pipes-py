@@ -24,9 +24,11 @@ of checks expected for this repository:
   * Jobs that run unconditionally on pull_request in .github/workflows/main.yml
     (skipped when main.yml does not exist).
 
-  * Extra contexts listed in .github/ruleset-sync-extras.json, one per line in
-    a JSON array — used for non-GitHub-Actions checks such as Buildkite
-    pipelines (e.g. ["buildkite/my-pipeline"]).  Omit the file when not needed.
+  * Buildkite pipeline checks derived from catalog-info.yaml: every document
+    with spec.type == "buildkite-pipeline" contributes a check context of the
+    form "buildkite/<spec.implementation.metadata.name>" unless the pipeline
+    is manual-only (implementation.spec.provider_settings.trigger_mode: none).
+    This source is skipped when catalog-info.yaml does not exist.
 
 Required environment variables:
   GITHUB_TOKEN       - token with repository access; metadata read (always
@@ -54,7 +56,7 @@ from pathlib import Path
 from ruamel.yaml import YAML
 
 WORKFLOW_PATH = Path(__file__).parent.parent / ".github" / "workflows" / "main.yml"
-EXTRAS_PATH = Path(__file__).parent.parent / ".github" / "ruleset-sync-extras.json"
+CATALOG_INFO_PATH = Path(__file__).parent.parent / "catalog-info.yaml"
 RULESET_NAME = "Require CI to pass"
 MATRIX_VAR_RE = re.compile(r"\$\{\{\s*matrix\.(\S+?)\s*\}\}")
 
@@ -63,6 +65,37 @@ def load_workflow(path: Path) -> dict:
     yaml = YAML()
     with path.open() as fh:
         return yaml.load(fh)
+
+
+def buildkite_checks_from_catalog(path: Path) -> set[str]:
+    """Return Buildkite check contexts derived from catalog-info.yaml.
+
+    For every YAML document in *path* whose ``spec.type`` is
+    ``"buildkite-pipeline"``, yields ``buildkite/<spec.implementation.metadata.name>``.
+    Pipelines whose ``implementation.spec.provider_settings.trigger_mode`` is
+    ``"none"`` are treated as manual-only and skipped. Returns an empty set
+    when the file does not exist.
+    """
+    if not path.exists():
+        return set()
+    yaml = YAML()
+    checks: set[str] = set()
+    with path.open() as fh:
+        for doc in yaml.load_all(fh):
+            if not isinstance(doc, dict):
+                continue
+            spec = doc.get("spec") or {}
+            if spec.get("type") != "buildkite-pipeline":
+                continue
+            implementation = spec.get("implementation") or {}
+            provider_settings = (implementation.get("spec") or {}).get("provider_settings") or {}
+            trigger_mode = str(provider_settings.get("trigger_mode", "")).strip().lower()
+            if trigger_mode == "none":
+                continue
+            name = (implementation.get("metadata") or {}).get("name")
+            if name:
+                checks.add(f"buildkite/{name}")
+    return checks
 
 
 def expand_matrix(name_template: str, matrix: dict) -> list[str]:
@@ -245,14 +278,12 @@ def main() -> None:
     else:
         expected = set()
 
-    # Merge in extra required checks (e.g. Buildkite contexts)
-    if EXTRAS_PATH.exists():
-        extras = json.loads(EXTRAS_PATH.read_text())
-        expected.update(extras)
+    # Merge in Buildkite pipeline checks derived from catalog-info.yaml
+    expected.update(buildkite_checks_from_catalog(CATALOG_INFO_PATH))
 
     if not expected:
         print(
-            "ERROR: no expected checks found " "(no .github/workflows/main.yml and no .github/ruleset-sync-extras.json)",
+            "ERROR: no expected checks found " "(no .github/workflows/main.yml and no catalog-info.yaml with buildkite-pipeline entries)",
             file=sys.stderr,
         )
         sys.exit(2)
