@@ -92,10 +92,7 @@ class Kibana:
             _cluster_name, cloud_info = cloud_id.split(":")
             domain, _es_uuid, kibana_uuid = base64.b64decode(cloud_info.encode("utf-8")).decode("utf-8").split("$")
 
-            if domain.endswith(":443"):
-                domain = domain[:-4]
-
-            url_from_cloud = f"https://{kibana_uuid}.{domain}:9243"
+            url_from_cloud = f"https://{kibana_uuid}.{domain}"
             if self.url and self.url != url_from_cloud:
                 raise ValueError(f"url provided ({self.url}) does not match url derived from cloud_id {url_from_cloud}")
             self.url = url_from_cloud
