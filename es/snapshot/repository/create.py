@@ -15,7 +15,7 @@
 from logging import Logger
 
 from elastic.pipes.core import Pipe
-from elastic.pipes.core.util import get_es_client
+from elastic.pipes.es.client import get_es_client
 from typing_extensions import Annotated
 
 

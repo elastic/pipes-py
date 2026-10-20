@@ -18,7 +18,8 @@ from logging import Logger
 from typing import Optional
 
 from elastic.pipes.core import Pipe
-from elastic.pipes.core.util import batched, get_es_client
+from elastic.pipes.core.util import batched
+from elastic.pipes.es.client import get_es_client
 from typing_extensions import Annotated
 
 

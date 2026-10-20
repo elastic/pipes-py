@@ -19,8 +19,10 @@ classifiers = [
 requires-python = ">=3.8"
 dependencies = [
   "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py",
+  "elasticsearch>=8.2.0",
   "httpx",
   "hvac>=2.0.0",
+  "requests",
 ]
 
 [project.urls]
@@ -35,9 +37,11 @@ packages = [
   "elastic.pipes.ec.deployments.es.keystore",
   "elastic.pipes.ec.users",
   "elastic.pipes.ec.users.auth",
+  "elastic.pipes.es",
   "elastic.pipes.es.snapshot",
   "elastic.pipes.es.snapshot.repository",
   "elastic.pipes.hcp.vault",
+  "elastic.pipes.kbn",
 ]
 
 [tool.setuptools.package-dir]
@@ -47,9 +51,11 @@ packages = [
 "elastic.pipes.ec.deployments.es.keystore" = "ec/deployments/es/keystore"
 "elastic.pipes.ec.users" = "ec/users"
 "elastic.pipes.ec.users.auth" = "ec/users/auth"
+"elastic.pipes.es" = "es"
 "elastic.pipes.es.snapshot" = "es/snapshot"
 "elastic.pipes.es.snapshot.repository" = "es/snapshot/repository"
 "elastic.pipes.hcp.vault" = "hcp/vault"
+"elastic.pipes.kbn" = "kbn"
 
 [tool.black]
 line-length = 140
