@@ -51,10 +51,18 @@ class Kibana:
             ca_certs: Path to CA certificate bundle.
 
         Raises:
-            ValueError: If neither url nor cloud_id provided, or if they conflict.
+            ValueError: If neither url nor cloud_id provided, if they conflict,
+                or if both basic_auth and api_key are provided.
         """
         if not (url or cloud_id):
             raise ValueError("Either `url` or `cloud_id` must be defined")
+        if basic_auth and api_key:
+            # requests.Session applies a non-None `session.auth` at request-prep
+            # time, silently overwriting any `Authorization` header already set
+            # on the session. Allowing both here would make `api_key` a silent
+            # no-op whenever `basic_auth` is also set, so the two are kept
+            # mutually exclusive instead.
+            raise ValueError("`basic_auth` and `api_key` cannot be used together")
 
         self.url = url
         self.session = requests.Session()
@@ -62,7 +70,7 @@ class Kibana:
 
         if api_key:
             self.session.headers["Authorization"] = f"ApiKey {api_key}"
-        if basic_auth:
+        elif basic_auth:
             self.session.auth = requests.auth.HTTPBasicAuth(*basic_auth)
         if not verify_certs:
             self.session.verify = False
