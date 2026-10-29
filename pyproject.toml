@@ -18,7 +18,7 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-  "elastic-pipes-core @ git+https://github.com/elastic/pipes-core-py",
+  "elastic-pipes-core ~= 0.8.0",
   "elasticsearch>=8.2.0",
   "httpx",
   "hvac>=2.0.0",
