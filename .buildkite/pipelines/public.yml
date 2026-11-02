@@ -1,6 +1,6 @@
 ---
 agents:
-  image: "docker.elastic.co/appex-qa/qaf:latest@sha256:dc4335e56e4eab72e51dfec089f91fb59113d3256d346aefb2ac03f35189da89"
+  image: "ghcr.io/astral-sh/uv:python3.11-bookworm@sha256:58683a39536f1f4ed2e1dd79cf155edccfb47731aba8964bd0312aac942126cf"
 
 steps:
   - group: "ec.users"
@@ -13,26 +13,36 @@ steps:
           export EC_API_URL=$(buildkite-agent meta-data get "ec-api-url")
           export EC_API_KEY=$(buildkite-agent meta-data get "ec-api-key")
           KEY_DESCRIPTION="bk-${BUILDKITE_PIPELINE_NAME}-${BUILDKITE_BUILD_NUMBER}"
-          ./ec/users/auth/test.yaml --log-level=debug -a key-description="$$KEY_DESCRIPTION"
+          ./ec/users/auth/test.yaml --log-level=info -a key-description="$$KEY_DESCRIPTION"
 
   - group: "ec.deployments"
     steps:
-      - label: "Create deployment"
+      - label: "Create deployment and test Kibana rules"
         key: create-deployment
         command: |
           echo "~~~ Install dependencies"
-          pip install .
+          apt-get update -qq && apt-get install -y -qq jq
+          pip install . 'uv==0.13.9'
           echo "+++ Create deployment"
           export EC_API_URL=$(buildkite-agent meta-data get "ec-api-url")
           export EC_API_KEY=$(buildkite-agent meta-data get "ec-api-key")
           export EC_DEPLOYMENT_NAME="bk-pipes-${BUILDKITE_BUILD_NUMBER}-$(echo "${BUILDKITE_BRANCH}" | tr -cs '[:alnum:]' '-' | tr '[:upper:]' '[:lower:]')"
-          ./ec/deployments/test-create.yaml --log-level=debug
-          exit_code=$?
-          EC_DEPLOYMENT_ID="$(jq -r ".id // empty" deployment.json 2>/dev/null || true)"
-          if [ -n "$EC_DEPLOYMENT_ID" ]; then
-            buildkite-agent meta-data set "deployment-id" "$EC_DEPLOYMENT_ID"
+          umask 077
+          trap 'rm -f deployment.json' EXIT
+          exit_code=0
+          ./ec/deployments/test-create.yaml --log-level=info || exit_code=$?
+          EC_DEPLOYMENT_ID="$(python -c 'import json; print(json.load(open("deployment.json")).get("id") or "")' 2>/dev/null || true)"
+          if [ -n "$$EC_DEPLOYMENT_ID" ]; then
+            buildkite-agent meta-data set "deployment-id" "$$EC_DEPLOYMENT_ID"
           fi
-          exit $exit_code
+          if [ "$$exit_code" -ne 0 ]; then
+            exit "$$exit_code"
+          fi
+          if [ -z "$$EC_DEPLOYMENT_ID" ]; then
+            echo "Deployment creation did not return an ID" >&2
+            exit 1
+          fi
+          .buildkite/scripts/test-kbn-rules.sh
 
       - label: "Destroy deployment"
         depends_on:
@@ -44,8 +54,8 @@ steps:
           export EC_API_URL=$(buildkite-agent meta-data get "ec-api-url")
           export EC_API_KEY=$(buildkite-agent meta-data get "ec-api-key")
           export EC_DEPLOYMENT_ID=$(buildkite-agent meta-data get "deployment-id" --default "")
-          if [ -n "$EC_DEPLOYMENT_ID" ]; then
-            ./ec/deployments/test-destroy.yaml --log-level=debug
+          if [ -n "$$EC_DEPLOYMENT_ID" ]; then
+            ./ec/deployments/test-destroy.yaml --log-level=info
           else
             echo "No deployment ID, skipping destroy"
           fi
