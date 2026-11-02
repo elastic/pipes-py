@@ -71,6 +71,7 @@ __pypackages__/
 # Environments
 .env
 .venv
+.venv-test/
 env/
 venv/
 ENV/

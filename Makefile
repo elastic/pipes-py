@@ -6,7 +6,7 @@ else
 	ACTIVATE = source $(VENV)/bin/activate
 endif
 
-all: lint
+all: lint test
 
 prereq:
 	$(PYTHON) -m pip install -r requirements.txt
@@ -16,18 +16,22 @@ lint:
 	$(PYTHON) -m black -q --check . || ($(PYTHON) -m black .; false)
 	$(PYTHON) -m isort -q --check . || ($(PYTHON) -m isort .; false)
 
+test:
+	$(MAKE) test-venv
+
 ruleset-check:
 	$(PYTHON) scripts/check-ruleset-sync.py
 
-$(VENV):
+.venv-test:
 	$(PYTHON) -m venv $@
 
 test-venv: VENV := .venv-test
-test-venv: $(VENV)
+test-venv: .venv-test
 	$(ACTIVATE); $(MAKE) test-ci
 
 test-ci:
 	pip install -r requirements.txt .
+	python -m unittest discover tests
 
 pkg-build:
 	$(PYTHON) -m build

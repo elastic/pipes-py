@@ -42,6 +42,7 @@ packages = [
   "elastic.pipes.es.snapshot.repository",
   "elastic.pipes.hcp.vault",
   "elastic.pipes.kbn",
+  "elastic.pipes.kbn.rules",
 ]
 
 [tool.setuptools.package-dir]
@@ -56,6 +57,7 @@ packages = [
 "elastic.pipes.es.snapshot.repository" = "es/snapshot/repository"
 "elastic.pipes.hcp.vault" = "hcp/vault"
 "elastic.pipes.kbn" = "kbn"
+"elastic.pipes.kbn.rules" = "kbn/rules"
 
 [tool.black]
 line-length = 140
@@ -68,6 +70,7 @@ skip = [".venv-test"]
 
 [tool.ruff]
 line-length = 140
+target-version = "py38"
 exclude = [".venv-test"]
 
 [tool.ruff.lint]
