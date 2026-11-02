@@ -149,6 +149,41 @@ class Kibana:
         res.raise_for_status()
         return res.json()
 
+    def get_detection_engine_rule_by_rule_id(self, rule_id):
+        """Return the Detection Engine rule with the supplied stable rule ID."""
+        url = f"{self.url}/api/detection_engine/rules"
+        res = self.session.get(url, params={"rule_id": rule_id})
+        res.raise_for_status()
+        return res.json()
+
+    def list_detection_engine_rules(self, *, rule_filter=None, per_page=100):
+        """Return all Detection Engine rules, optionally filtering through Kibana.
+
+        ``rule_filter`` is passed unchanged to Kibana's Detection Engine API.
+        Pagination uses creation time so state changes do not reorder later
+        pages. Rules are deduplicated by stable ``rule_id`` to tolerate a
+        catalogue changing while it is read.
+        """
+        rules = {}
+        page = 1
+        while True:
+            params = {
+                "page": page,
+                "per_page": per_page,
+                "sort_field": "created_at",
+                "sort_order": "asc",
+            }
+            if rule_filter is not None:
+                params["filter"] = rule_filter
+            res = self.session.get(f"{self.url}/api/detection_engine/rules/_find", params=params)
+            res.raise_for_status()
+            result = res.json()
+            for rule in result["data"]:
+                rules[rule.get("rule_id") or rule["id"]] = rule
+            if page * result["perPage"] >= result["total"]:
+                return list(rules.values())
+            page += 1
+
     def find_detection_engine_rules(self, count_max, enabled=None):
         count_max += 1
         url = f"{self.url}/api/detection_engine/rules/_find?per_page={count_max}"
