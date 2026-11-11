@@ -39,10 +39,9 @@ class Context(Pipe.Context):
             if token := token_file.read_text():
                 self.logger.debug(f"    read token from file '{token_file}'")
                 self.token = token
-        elif not self.token:
-            if token := os.environ.get("VAULT_TOKEN", None):
-                self.logger.debug("    read token from environment 'VAULT_TOKEN'")
-                self.token = token
+        elif not self.token and (token := os.environ.get("VAULT_TOKEN")):
+            self.logger.debug("    read token from environment 'VAULT_TOKEN'")
+            self.token = token
 
         if not self.url:
             self.logger.error("Vault URL is not defined")
