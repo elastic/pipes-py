@@ -1,0 +1,24 @@
+#!/usr/bin/env -S elastic-pipes run
+
+# Retrieve rules and print them as JSON.
+# The target comes from the environment: KBN_URL, KBN_USERNAME, KBN_PASSWORD.
+# Arguments: filter, rule_ids, allow_missing, per_page.
+
+stack:
+  shell-expand: true
+  kibana:
+    url: "$KBN_URL"
+  credentials:
+    username: "$KBN_USERNAME"
+    password: "$KBN_PASSWORD"
+
+pipes:
+  - elastic.pipes.kbn.rules.get:
+      filter@: runtime.arguments.filter
+      rule-ids@: runtime.arguments.rule_ids
+      allow-missing-rule-ids@: runtime.arguments.allow_missing
+      per-page@: runtime.arguments.per_page
+
+  - elastic.pipes.core.export:
+      node@: rules
+      format: json

@@ -1,0 +1,71 @@
+#!/usr/bin/env -S elastic-pipes run
+
+# Seed a Kibana deployment with the rules used by test.sh.
+# The target comes from the environment: KBN_URL, KBN_USERNAME, KBN_PASSWORD.
+
+stack:
+  shell-expand: true
+  kibana:
+    url: "$KBN_URL"
+  credentials:
+    username: "$KBN_USERNAME"
+    password: "$KBN_PASSWORD"
+
+pipes:
+  - elastic.pipes.kbn.rules.create:
+      rules:
+        - rule_id: pipes-py-eql-enabled-1
+          name: Pipes integration EQL enabled 1
+          description: Temporary rule for the Pipes integration test
+          type: eql
+          language: eql
+          query: process where process.name == "pipes-py-1"
+          index: ["logs-*"]
+          risk_score: 21
+          severity: low
+          enabled: true
+          tags: ["pipes-py-integration"]
+        - rule_id: pipes-py-eql-enabled-2
+          name: Pipes integration EQL enabled 2
+          description: Temporary rule for the Pipes integration test
+          type: eql
+          language: eql
+          query: process where process.name == "pipes-py-2"
+          index: ["logs-*"]
+          risk_score: 21
+          severity: low
+          enabled: true
+          tags: ["pipes-py-integration"]
+        - rule_id: pipes-py-kuery-enabled
+          name: Pipes integration Kuery enabled
+          description: Temporary rule for the Pipes integration test
+          type: query
+          language: kuery
+          query: "process.name: pipes-py-3"
+          index: ["logs-*"]
+          risk_score: 21
+          severity: low
+          enabled: true
+          tags: ["pipes-py-integration"]
+        - rule_id: pipes-py-eql-disabled
+          name: Pipes integration EQL disabled
+          description: Temporary rule for the Pipes integration test
+          type: eql
+          language: eql
+          query: process where process.name == "pipes-py-4"
+          index: ["logs-*"]
+          risk_score: 21
+          severity: low
+          enabled: false
+          tags: ["pipes-py-integration"]
+        - rule_id: pipes-py-kuery-disabled
+          name: Pipes integration Kuery disabled
+          description: Temporary rule for the Pipes integration test
+          type: query
+          language: kuery
+          query: "process.name: pipes-py-5"
+          index: ["logs-*"]
+          risk_score: 21
+          severity: low
+          enabled: false
+          tags: ["pipes-py-integration"]

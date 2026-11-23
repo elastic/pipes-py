@@ -33,6 +33,19 @@ pipes:
                   size:
                     resource: "memory"
                     value: 1024
+        kibana:
+          - ref_id: "main-kibana"
+            elasticsearch_cluster_ref_id: "main-elasticsearch"
+            region: "gcp-us-central1"
+            plan:
+              kibana:
+                version: "9.0.0"
+              cluster_topology:
+                - instance_configuration_id: "gcp.kibana.n2.68x32x45"
+                  zone_count: 1
+                  size:
+                    resource: "memory"
+                    value: 1024
 
   - elastic.pipes.core.export:
       file: deployment.json
